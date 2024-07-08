@@ -57,6 +57,7 @@ parser.add_argument('--no-collate', action='store_true', help='Do not collate UN
 parser.add_argument('--skip-safety-checker', action='store_true', help='Skips converting the safety checker.')
 parser.add_argument('-O', '--opset', type=int, default=15, help='The ONNX opset version models will be output with.')
 parser.add_argument('--clip-skip', type=int, default=0, help='Which layer to use for final text embeddings in the text encoder. Set to 0 = final layer (default), 1 = penultimate layer (aka A111 CLIP skip = 2). Penultimate might be better for anime models.')
+parser.add_argument("--device", type=str, default=torch.device('cuda' if torch.cuda.is_available() else 'cpu'), help="Device in which to run the conversion. Warning: CPU is really slow, should only be used if you don't have a GPU with enough memory.")
 #parser.add_argument('-q', '--quantize', type=str, help='Quantize models. See the documentation for more information.')
 args = parser.parse_args()
 
@@ -80,7 +81,7 @@ if args.fp16 or args.fp16_unet:
 		color='yellow'
 	)
 
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+DEVICE = args.device
 MODEL_DTYPE = torch.float16 if args.fp16 else torch.float32
 UNET_DTYPE = torch.float16 if args.fp16_unet else MODEL_DTYPE
 IO_DTYPE = torch.float32

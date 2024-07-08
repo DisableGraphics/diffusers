@@ -49,6 +49,8 @@ Only generic CPU, CUDA, and TensorRT have prebuilt binaries available (*for now*
 Add the following to your `Cargo.toml`:
 ```toml
 [dependencies]
+# Image functions
+image = "0.24"
 pyke-diffusers = { git = "https://github.com/pykeio/diffusers", rev = "69c33b996416ca42535e4f524068081b93486770" } 
 # if you'd like to use CUDA:
 pyke-diffusers = { git = "https://github.com/pykeio/diffusers", rev = "69c33b996416ca42535e4f524068081b93486770", features = [ "ort-cuda" ] }
@@ -88,15 +90,14 @@ pyke Diffusers currently supports Stable Diffusion v1, v2, and its derivatives.
 
 To convert a model from a Hugging Face `diffusers` model:
 1. Create and activate a virtual environment.
+    - `python -m venv .env && source .env/bin/activate`
 2. Install Python requirements:
-    - install torch with CUDA: `python3 -m pip install torch --extra-index-url https://download.pytorch.org/whl/cu116`
-    - install dependencies: `python3 -m pip install -r requirements.txt`
+    - install torch with CUDA: `pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu116`
+    - install dependencies: `pip install -r requirements.txt`
 3. If you are converting a model directly from Hugging Face, log in to Hugging Face Hub with `huggingface-cli login` - this can be skipped if you have the model on disk
-5. Convert your model with `scripts/hf2pyke.py`:
-    - To convert a float32 model from HF (recommended for CPU inference): `python3 scripts/hf2pyke.py runwayml/stable-diffusion-v1-5 ~/pyke-diffusers-sd15/`
-    - To convert a float32 model from disk: `python3 scripts/hf2pyke.py ~/stable-diffusion-v1-5/ ~/pyke-diffusers-sd15/`
-    - To convert a float16 model from HF (recommended for GPU inference): `python3 scripts/hf2pyke.py --fp16 runwayml/stable-diffusion-v1-5@fp16 ~/pyke-diffusers-sd15-fp16/`
-    - To convert a float16 model from disk: `python3 scripts/hf2pyke.py --fp16 ~/stable-diffusion-v1-5-fp16/ ~/pyke-diffusers-sd15-fp16/`
+5. Convert your model with `scripts/sd2pyke.py`:
+    - Convert your ckpt/safetensors model with: `python scripts/sd2pyke.py path_to_your_model.safetensors output_path --device cuda`
+    - If you don't have a GPU or yours doesn't have enough VRAM, you can specify `--device cpu` instead
 
 float16 models are faster on some GPUs and use less memory. `hf2pyke` supports a few options to improve performance or ORT execution provider compatibility. See `python3 scripts/hf2pyke.py --help`.
 
