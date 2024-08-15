@@ -15,7 +15,7 @@
 use std::{
 	fs,
 	path::{Path, PathBuf},
-	sync::Arc
+	sync::Arc,
 };
 
 use image::{DynamicImage, Rgb32FImage};
@@ -28,7 +28,7 @@ use crate::{
 	config::{DiffusionFramework, DiffusionPipeline, StableDiffusionConfig, TokenizerConfig},
 	pipelines::StableDiffusionOptions,
 	text_embeddings::TextEmbeddings,
-	Prompt
+	Prompt,
 };
 
 /// A [Stable Diffusion](https://github.com/CompVis/stable-diffusion) pipeline.
@@ -64,7 +64,7 @@ pub struct StableDiffusionPipeline {
 	pub(crate) unet: Session,
 	safety_checker: Option<Session>,
 	#[allow(dead_code)]
-	feature_extractor: Option<()>
+	feature_extractor: Option<()>,
 }
 
 impl StableDiffusionPipeline {
@@ -113,12 +113,12 @@ impl StableDiffusionPipeline {
 			DiffusionPipeline::StableDiffusion { framework, inner } => {
 				match framework {
 					DiffusionFramework::Orte { .. } => (),
-					_ => panic!("bad framework")
+					_ => panic!("bad framework"),
 				}
 				inner
 			}
 			#[allow(unreachable_patterns)]
-			_ => anyhow::bail!("not a stable diffusion pipeline")
+			_ => anyhow::bail!("not a stable diffusion pipeline"),
 		};
 
 		let tokenizer = match &config.tokenizer {
@@ -126,10 +126,10 @@ impl StableDiffusionPipeline {
 				path,
 				model_max_length,
 				bos_token,
-				eos_token
+				eos_token,
 			} => CLIPStandardTokenizer::new(root.join(path.clone()), *model_max_length, *bos_token, *eos_token)?,
 			#[allow(unreachable_patterns)]
-			_ => anyhow::bail!("not a clip tokenizer")
+			_ => anyhow::bail!("not a clip tokenizer"),
 		};
 		let text_embeddings = TextEmbeddings::from_file(root.join(&config.text_encoder.text_embeddings.as_ref().unwrap().path), tokenizer)?;
 
@@ -176,7 +176,7 @@ impl StableDiffusionPipeline {
 			text_embeddings,
 			unet,
 			safety_checker,
-			feature_extractor: None
+			feature_extractor: None,
 		})
 	}
 
@@ -202,12 +202,12 @@ impl StableDiffusionPipeline {
 			DiffusionPipeline::StableDiffusion { framework, inner } => {
 				match framework {
 					DiffusionFramework::Orte { .. } => (),
-					_ => panic!("bad framework")
+					_ => panic!("bad framework"),
 				}
 				inner
 			}
 			#[allow(unreachable_patterns)]
-			_ => anyhow::bail!("not a stable diffusion pipeline!")
+			_ => anyhow::bail!("not a stable diffusion pipeline!"),
 		};
 
 		let options = options.unwrap_or_else(|| self.options.clone());
@@ -235,10 +235,10 @@ impl StableDiffusionPipeline {
 				path,
 				model_max_length,
 				bos_token,
-				eos_token
+				eos_token,
 			} => CLIPStandardTokenizer::new(new_root.join(path.clone()), *model_max_length, *bos_token, *eos_token)?,
 			#[allow(unreachable_patterns)]
-			_ => anyhow::bail!("not a clip tokenizer")
+			_ => anyhow::bail!("not a clip tokenizer"),
 		};
 		self.text_embeddings = TextEmbeddings::from_file(new_root.join(&new_config.text_encoder.text_embeddings.as_ref().unwrap().path), tokenizer)?;
 
@@ -306,7 +306,7 @@ impl StableDiffusionPipeline {
 	pub fn replace_vae<D, E>(&mut self, decoder: D, encoder: Option<E>) -> OrtResult<()>
 	where
 		E: AsRef<Path>,
-		D: AsRef<Path>
+		D: AsRef<Path>,
 	{
 		self.vae_decoder = SessionBuilder::new(&self.environment)?
 			.with_execution_providers([self.options.devices.vae_decoder.clone().into()])?
@@ -316,9 +316,9 @@ impl StableDiffusionPipeline {
 			Some(s) => Some(
 				SessionBuilder::new(&self.environment)?
 					.with_execution_providers([self.options.devices.vae_encoder.clone().into()])?
-					.with_model_from_file(s)?
+					.with_model_from_file(s)?,
 			),
-			None => None
+			None => None,
 		};
 		Ok(())
 	}
@@ -328,9 +328,9 @@ impl StableDiffusionPipeline {
 			Some(s) => Some(
 				SessionBuilder::new(&self.environment)?
 					.with_execution_providers([self.options.devices.safety_checker.clone().into()])?
-					.with_model_from_file(s)?
+					.with_model_from_file(s)?,
 			),
-			None => None
+			None => None,
 		};
 		Ok(())
 	}
@@ -360,7 +360,7 @@ impl StableDiffusionPipeline {
 					negative_prompt
 				},
 				3,
-				true
+				true,
 			)?;
 			let mut text_embeddings = embeddings.0;
 			if do_classifier_free_guidance {
@@ -377,7 +377,7 @@ impl StableDiffusionPipeline {
 	fn to_image(&self, width: u32, height: u32, arr: &Array4<f32>) -> anyhow::Result<DynamicImage> {
 		Ok(DynamicImage::ImageRgb32F(
 			Rgb32FImage::from_raw(width, height, arr.map(|f| f.clamp(0.0, 1.0)).into_iter().collect::<Vec<_>>())
-				.ok_or_else(|| anyhow::anyhow!("failed to construct image"))?
+				.ok_or_else(|| anyhow::anyhow!("failed to construct image"))?,
 		))
 	}
 

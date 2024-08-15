@@ -10,7 +10,7 @@ pub enum ImagePreprocessing {
 	/// The image is resized to the target size.
 	Resize,
 	/// Resize and crop the image to fit in the target size.
-	CropFill
+	CropFill,
 }
 
 /// Options for the Stable Diffusion image-to-image pipeline.
@@ -19,7 +19,7 @@ pub struct StableDiffusionImg2ImgOptions {
 	pub reference_image: Array4<f32>,
 	pub noise_strength: f32,
 	pub preprocessing: ImagePreprocessing,
-	pub text_config: StableDiffusionTxt2ImgOptions
+	pub text_config: StableDiffusionTxt2ImgOptions,
 }
 
 impl Default for StableDiffusionImg2ImgOptions {
@@ -28,7 +28,7 @@ impl Default for StableDiffusionImg2ImgOptions {
 			reference_image: Array4::default((1, 1, 1, 1)),
 			noise_strength: 0.6,
 			preprocessing: ImagePreprocessing::CropFill,
-			text_config: StableDiffusionTxt2ImgOptions::default()
+			text_config: StableDiffusionTxt2ImgOptions::default(),
 		}
 	}
 }
@@ -109,7 +109,7 @@ impl StableDiffusionImg2ImgOptions {
 	/// - NAI `[[word]]` = pyke `(word:0.907)`
 	pub fn with_prompt<P>(mut self, positive_prompt: P) -> Self
 	where
-		P: Into<Prompt>
+		P: Into<Prompt>,
 	{
 		self.text_config.positive_prompt = positive_prompt.into();
 		self
@@ -127,7 +127,7 @@ impl StableDiffusionImg2ImgOptions {
 	/// example, `[word]` means the model will only be guided slightly away from `word`.
 	pub fn with_negative_prompt<P>(mut self, negative_prompt: P) -> Self
 	where
-		P: Into<Prompt>
+		P: Into<Prompt>,
 	{
 		self.text_config.negative_prompt = Some(negative_prompt.into());
 		self
@@ -184,7 +184,7 @@ impl StableDiffusionImg2ImgOptions {
 				0 => pixel.0[0],
 				1 => pixel.0[1],
 				2 => pixel.0[2],
-				_ => unreachable!()
+				_ => unreachable!(),
 			}
 		});
 		self
@@ -201,7 +201,7 @@ impl StableDiffusionImg2ImgOptions {
 				0 => pixel.0[0],
 				1 => pixel.0[1],
 				2 => pixel.0[2],
-				_ => unreachable!()
+				_ => unreachable!(),
 			}
 		});
 		self
@@ -210,7 +210,7 @@ impl StableDiffusionImg2ImgOptions {
 	fn img_norm(&self, image: &DynamicImage) -> Rgb32FImage {
 		let img = match self.preprocessing {
 			ImagePreprocessing::Resize => image.resize_exact(self.text_config.width, self.text_config.height, FilterType::Lanczos3),
-			ImagePreprocessing::CropFill => image.resize_to_fill(self.text_config.width, self.text_config.height, FilterType::Lanczos3)
+			ImagePreprocessing::CropFill => image.resize_to_fill(self.text_config.width, self.text_config.height, FilterType::Lanczos3),
 		};
 		// normalize to [0, 1]
 		img.to_rgb32f()
@@ -219,7 +219,7 @@ impl StableDiffusionImg2ImgOptions {
 	#[doc = include_str!("_doc/callback-progress.md")]
 	pub fn callback_progress<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32) -> bool + 'static
+		F: Fn(usize, f32) -> bool + 'static,
 	{
 		self.text_config.callback = Some(StableDiffusionCallback::Progress { frequency, cb: Box::new(callback) });
 		self
@@ -228,7 +228,7 @@ impl StableDiffusionImg2ImgOptions {
 	#[doc = include_str!("_doc/callback-latents.md")]
 	pub fn callback_latents<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Array4<f32>) -> bool + 'static
+		F: Fn(usize, f32, Array4<f32>) -> bool + 'static,
 	{
 		self.text_config.callback = Some(StableDiffusionCallback::Latents { frequency, cb: Box::new(callback) });
 		self
@@ -237,7 +237,7 @@ impl StableDiffusionImg2ImgOptions {
 	#[doc = include_str!("_doc/callback-decode-image.md")]
 	pub fn callback_decoded<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static
+		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static,
 	{
 		self.text_config.callback = Some(StableDiffusionCallback::Decoded { frequency, cb: Box::new(callback) });
 		self
@@ -246,7 +246,7 @@ impl StableDiffusionImg2ImgOptions {
 	#[doc = include_str!("_doc/callback-approximate-image.md")]
 	pub fn callback_approximate<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static
+		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static,
 	{
 		self.text_config.callback = Some(StableDiffusionCallback::ApproximateDecoded { frequency, cb: Box::new(callback) });
 		self

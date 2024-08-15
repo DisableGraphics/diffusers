@@ -2,7 +2,7 @@ use std::{
 	collections::HashMap,
 	fs::File,
 	io::{self, BufRead, BufReader},
-	path::Path
+	path::Path,
 };
 
 use byteorder::{LittleEndian, ReadBytesExt};
@@ -12,13 +12,13 @@ use crate::clip::CLIPStandardTokenizer;
 
 pub struct AddedToken {
 	pub tok: String,
-	pub tid: u32
+	pub tid: u32,
 }
 
 pub struct TextEmbeddings {
 	pub tokenizer: CLIPStandardTokenizer,
 	text_hidden_size: u32,
-	pub tokens: HashMap<u32, Array2<f32>>
+	pub tokens: HashMap<u32, Array2<f32>>,
 }
 
 impl TextEmbeddings {
@@ -80,7 +80,7 @@ impl TextEmbeddings {
 			special: false,
 			lstrip: false,
 			rstrip: false,
-			normalized: false
+			normalized: false,
 		}]);
 		let token_id = self.tokenizer.inner.token_to_id(&tok).unwrap();
 

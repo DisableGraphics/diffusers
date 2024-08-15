@@ -11,3 +11,4 @@ Cargo.lock
 /models/
 !tests/**
 /result.png
+**venv

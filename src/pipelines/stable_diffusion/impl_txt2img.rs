@@ -3,7 +3,7 @@ use ndarray::{concatenate, s, Array1, Array4, Axis, CowArray, IxDyn};
 use ndarray_rand::{
 	rand::{self, rngs::StdRng, Rng, SeedableRng},
 	rand_distr::StandardNormal,
-	RandomExt
+	RandomExt,
 };
 use num_traits::ToPrimitive;
 use ort::OrtOwnedTensor;
@@ -44,7 +44,7 @@ pub struct StableDiffusionTxt2ImgOptions {
 	pub negative_prompt: Option<Prompt>,
 	/// An optional callback to call every `n` steps in the generation process. Can be used to log or display progress,
 	/// see [`StableDiffusionCallback`] for more details.
-	pub callback: Option<StableDiffusionCallback>
+	pub callback: Option<StableDiffusionCallback>,
 }
 
 impl Default for StableDiffusionTxt2ImgOptions {
@@ -59,7 +59,7 @@ impl Default for StableDiffusionTxt2ImgOptions {
 			ensd: 0,
 			positive_prompt: Prompt::default(),
 			negative_prompt: None,
-			callback: None
+			callback: None,
 		}
 	}
 }
@@ -126,7 +126,7 @@ impl StableDiffusionTxt2ImgOptions {
 	/// - NAI `[[word]]` = pyke `(word:0.907)`
 	pub fn with_prompt<P>(mut self, positive_prompt: P) -> Self
 	where
-		P: Into<Prompt>
+		P: Into<Prompt>,
 	{
 		self.positive_prompt = positive_prompt.into();
 		self
@@ -148,7 +148,7 @@ impl StableDiffusionTxt2ImgOptions {
 	/// example, `[word]` means the model will only be guided slightly away from `word`.
 	pub fn with_negative_prompt<P>(mut self, negative_prompt: P) -> Self
 	where
-		P: Into<Prompt>
+		P: Into<Prompt>,
 	{
 		self.negative_prompt = Some(negative_prompt.into());
 		self
@@ -187,7 +187,7 @@ impl StableDiffusionTxt2ImgOptions {
 	#[doc = include_str!("_doc/callback-progress.md")]
 	pub fn callback_progress<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32) -> bool + 'static
+		F: Fn(usize, f32) -> bool + 'static,
 	{
 		self.callback = Some(StableDiffusionCallback::Progress { frequency, cb: Box::new(callback) });
 		self
@@ -195,7 +195,7 @@ impl StableDiffusionTxt2ImgOptions {
 	#[doc = include_str!("_doc/callback-latents.md")]
 	pub fn callback_latents<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Array4<f32>) -> bool + 'static
+		F: Fn(usize, f32, Array4<f32>) -> bool + 'static,
 	{
 		self.callback = Some(StableDiffusionCallback::Latents { frequency, cb: Box::new(callback) });
 		self
@@ -203,7 +203,7 @@ impl StableDiffusionTxt2ImgOptions {
 	#[doc = include_str!("_doc/callback-decode-image.md")]
 	pub fn callback_decoded<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static
+		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static,
 	{
 		self.callback = Some(StableDiffusionCallback::Decoded { frequency, cb: Box::new(callback) });
 		self
@@ -211,7 +211,7 @@ impl StableDiffusionTxt2ImgOptions {
 	#[doc = include_str!("_doc/callback-approximate-image.md")]
 	pub fn callback_approximate<F>(mut self, frequency: usize, callback: F) -> Self
 	where
-		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static
+		F: Fn(usize, f32, Vec<DynamicImage>) -> bool + 'static,
 	{
 		self.callback = Some(StableDiffusionCallback::ApproximateDecoded { frequency, cb: Box::new(callback) });
 		self
@@ -314,7 +314,7 @@ impl StableDiffusionTxt2ImgOptions {
 						StableDiffusionCallback::ApproximateDecoded { frequency, cb } if i != 0 && i % frequency == 0 => {
 							cb(i, t.to_f32().unwrap(), session.approximate_decode_latents(latents.view())?)
 						}
-						_ => true
+						_ => true,
 					};
 					if !keep_going {
 						break;
